@@ -1,0 +1,21 @@
+-- 문제 1.
+SELECT first_name 이름, salary 월급, phone_number 전화번호, hire_date 입사일
+FROM employees
+ORDER BY hire_date ASC;
+
+-- 문제 2.
+SELECT job_id, job_title, max_salary
+FROM jobs
+ORDER BY job_title DESC, max_salary DESC;
+
+-- 문제 3.
+SELECT first_name, manager_id, commission_pct, salary
+FROM employees
+WHERE commission_pct is NULL
+    AND salary > 3000;
+
+-- 문제 4.
+SELECT job_id, job_title, max_salary
+FROM jobs
+WHERE max_salary >= 1000
+ORDER BY max_salary DESC;
