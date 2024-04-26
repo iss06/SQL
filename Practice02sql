@@ -1,0 +1,13 @@
+-- 문제 1.
+SELECT COUNT(*) haveMngCnt
+FROM employees
+WHERE manager_id IS NOT NULL;
+
+-- 문제 2.
+SELECT first_name, salary,
+    DECODE(salary(1, 2))
+FROM employees;
+
+-- 문제 3.
+SElECT TO_CHAR(MAX(hire_date),'YYYY"년" MM"월" DD"일"') "입사일"
+FROM employees;
