@@ -1,17 +1,18 @@
 -- 문제 1.
-SELECT first_name 이름, salary 월급, phone_number 전화번호, hire_date 입사일
+SELECT first_name || ' ' || last_name 이름, salary 월급, phone_number 전화번호, hire_date 입사일
 FROM employees
 ORDER BY hire_date ASC;
 
 -- 문제 2.
 SELECT job_id, job_title, max_salary
 FROM jobs
-ORDER BY job_title DESC, max_salary DESC;
+ORDER BY max_salary DESC;
 
 -- 문제 3.
 SELECT first_name, manager_id, commission_pct, salary
 FROM employees
-WHERE commission_pct is NULL
+WHERE manager_id IS NOT NULL 
+    AND commission_pct is NULL
     AND salary > 3000;
 
 -- 문제 4.
@@ -27,15 +28,15 @@ WHERE salary >= 10000 AND salary < 14000
 ORDER BY salary DESC;
 
 -- 문제 6.
-SELECT first_name, salary, hire_date "1977-12", department_id
+SELECT first_name, salary, TO_CHAR(hire_date, 'YYYY-MM')hire_date, department_id
 FROM employees
 WHERE department_id IN (10, 90, 100);
 
 -- 문제 7.
 SELECT first_name, salary
 FROM employees
-WHERE LOWER(first_name) LIKE '%S%'
-    OR LOWER(first_name) LIKE '%s%';
+WHERE first_name LIKE '%S%'
+    OR first_name LIKE '%s%';
 
 -- 문제 8.
 SELECT department_name
@@ -43,13 +44,12 @@ FROM departments
 ORDER BY LENGTH(department_name) DESC;
 
 -- 문제 9.
-SELECT country_id,
-    UPPER(country_name)
+SELECT UPPER(country_name) country_name
 FROM countries
 ORDER BY country_name ASC;
 
 -- 문제 10.
-SELECT first_name, salary, 
+SELECT first_name, salary,
     REPLACE(SUBSTR(phone_number, 3), '.', '-') phone_number, hire_date
 FROM employees
 WHERE hire_date < '13/12/31';
