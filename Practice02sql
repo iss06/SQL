@@ -4,10 +4,69 @@ FROM employees
 WHERE manager_id IS NOT NULL;
 
 -- 문제 2.
-SELECT first_name, salary,
-    DECODE(salary(1, 2))
+SELECT MAX(salary) 최대임금, MIN(salary) 최저임금, MAX(salary) - MIN(salary) "최고임금 - 최저임금"
 FROM employees;
 
 -- 문제 3.
 SElECT TO_CHAR(MAX(hire_date),'YYYY"년" MM"월" DD"일"') "입사일"
 FROM employees;
+
+-- 문제 4.
+SELECT AVG(salary) 평균임금, MAX(salary) 최고임금, MIN(salary) 최저임금, department_id 부서아이디
+FROM employees
+GROUP BY department_id
+ORDER BY department_id DESC; 
+
+-- 문제 5.
+SELECT ROUND(AVG(salary)) 평균임금,
+       MAX(salary) 최고임금,
+       MIN(salary) 최저임금,
+       job_id 업무아이디
+FROM employees
+GROUP BY job_id
+ORDER BY job_id, MIN(salary) DESC, ROUND(AVG(salary));
+
+-- 문제 6.
+SELECT TO_CHAR(MIN(hire_date), 'YYYY-MM-DD DAY', 'NLS_DATE_LANGUAGE=KOREAN') 입사일
+FROM employees;
+
+-- 문제 7.
+SELECT department_id,
+       AVG(salary) 평균임금,
+       MIN(salary) 최저임금,
+       AVG(salary) - MIN(salary) "평균임금 - 최저임금"
+FROM employees
+GROUP BY department_id
+    HAVING(AVG(salary) - MIN(salary)) < 2000
+ORDER BY(AVG(salary) - MIN(salary)) DESC;
+
+-- 문제 8.
+SELECT job_id,
+       MAX(salary) 최고임금,
+       MIN(salary) 최저임금,
+       MAX(salary) - MIN(salary) 임금차이
+FROM employees
+GROUP BY job_id
+ORDER BY 임금차이 DESC;
+
+-- 문제 9.
+SELECT manager_id 입사자,
+       ROUND(AVG(salary) , 1) 평균급여,
+       MIN(salary) 최소급여,
+       MAX(salary) 최대급여
+FROM employees
+WHERE hire_date >= '2015/01/01'
+GROUP BY manager_id
+HAVING ROUND(AVG(salary) , 1) >= 5000
+ORDER BY  AVG(salary) DESC;
+
+-- 문제 10.
+SELECT first_name, hire_date, employee_id,
+    CASE WHEN hire_date <= '12/12/31' THEN '창립멤버'
+         WHEN hire_date <= '13/01/01' THEN '13년입사'
+         WHEN hire_date <= '14/01/01' THEN '14년입사'
+         ELSE '상장이후입사'
+         END 입사일
+FROM employees
+ORDER BY hire_date ASC;
+
