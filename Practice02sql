@@ -61,12 +61,12 @@ HAVING ROUND(AVG(salary) , 1) >= 5000
 ORDER BY  AVG(salary) DESC;
 
 -- 문제 10.
-SELECT first_name, hire_date, employee_id,
+SELECT first_name, hire_date,
     CASE WHEN hire_date <= '12/12/31' THEN '창립멤버'
-         WHEN hire_date <= '13/01/01' THEN '13년입사'
-         WHEN hire_date <= '14/01/01' THEN '14년입사'
+         WHEN EXTRACT(YEAR FROM hire_date) = 2013 THEN '13년입사'
+         WHEN EXTRACT(YEAR FROM hire_date) = 2014 THEN '14년입사'
          ELSE '상장이후입사'
-         END 입사일
+         END optDate
 FROM employees
 ORDER BY hire_date ASC;
 
