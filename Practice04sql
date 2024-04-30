@@ -1,0 +1,56 @@
+-- 문제 1.
+SELECT COUNT(salary)
+FROM employees
+WHERE salary < (SELECT AVG(salary) FROM employees);
+
+-- 문제 2.
+SELECT employee_id 직원번호,   
+       first_name 이름, 
+       salary 급여
+FROM employees
+WHERE salary >= (SELECT AVG(salary) FROM employees)
+AND salary < (SELECT MAX(salary) FROM employees)
+ORDER BY salary ASC;
+
+-- 문제 3.
+SELECT 
+    loc.location_id, 
+    loc.street_address, 
+    loc.postal_code, 
+    loc.city, 
+    loc.state_province, 
+    loc.country_id
+FROM 
+    employees emp
+JOIN 
+    departments dept ON emp.department_id = dept.department_id
+JOIN 
+    locations loc ON dept.location_id = loc.location_id
+WHERE 
+    emp.first_name = 'Steven' AND emp.last_name = 'King';
+    
+-- 문제 4.
+SELECT employee_id, first_name, salary
+FROM employees
+WHERE salary < ANY (SELECT salary FROM employees WHERE job_id = 'ST_MAN')
+ORDER BY salary DESC;
+
+-- 문제 5.
+SELECT emp.employee_id, emp.first_name, emp.salary, emp.department_id
+FROM employees emp
+WHERE emp.salary = (SELECT MAX(salary) FROM employees dept WHERE dept.department_id = emp.department_id)
+ORDER BY salary DESC;
+
+--SELECT emp.employee_id, emp.first_name, emp.salary, emp.department_id
+--FROM employees emp
+--JOIN (SELECT department_id, MAX(salary) FROM employees GROUP BY department_id) sal
+--ON emp.department_id = sal.department_id AND emp.salary = sal.
+--ORDER BY emp.salary DESC;
+
+-- 문제 6.
+SELECT j.job_title, SUM(emp.salary)
+FROM employees emp
+    JOIN jobs j
+        ON emp.job_id = j.job_id
+GROUP BY j.job_title
+ORDER BY SUM(emp.salary) DESC;
