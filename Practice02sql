@@ -24,7 +24,7 @@ SELECT ROUND(AVG(salary)) 평균임금,
        job_id 업무아이디
 FROM employees
 GROUP BY job_id
-ORDER BY job_id, MIN(salary) DESC, ROUND(AVG(salary));
+ORDER BY job_id, MIN(salary) DESC, AVG(salary) ASC;
 
 -- 문제 6.
 SELECT TO_CHAR(MIN(hire_date), 'YYYY-MM-DD DAY', 'NLS_DATE_LANGUAGE=KOREAN') 입사일
