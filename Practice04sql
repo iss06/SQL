@@ -11,24 +11,44 @@ FROM employees
 WHERE salary >= (SELECT AVG(salary) FROM employees)
 AND salary < (SELECT MAX(salary) FROM employees)
 ORDER BY salary ASC;
+------------------------------------------
+SELECT emp.employee_id,
+       emp.first_name,
+       emp.salary,
+       t.avgsalary,
+       t.maxsalary
+FROM employees emp
+    JOIN (SELECT ROUND(AVG(salary)) avgsalary,
+                MAX(salary) maxsalary
+                FROM employees) t
+    ON emp.salary BETWEEN t.avgsalary AND t.maxsalary
+ORDER BY salary;
 
 -- 문제 3.
 SELECT 
-    loc.location_id, 
-    loc.street_address, 
-    loc.postal_code, 
-    loc.city, 
-    loc.state_province, 
-    loc.country_id
-FROM 
-    employees emp
-JOIN 
-    departments dept ON emp.department_id = dept.department_id
-JOIN 
-    locations loc ON dept.location_id = loc.location_id
-WHERE 
-    emp.first_name = 'Steven' AND emp.last_name = 'King';
-    
+    location_id, 
+    street_address, 
+    postal_code, 
+    city, 
+    state_province, 
+    country_id
+FROM locations
+    NATURAL JOIN departments
+    JOIN employees ON employees.department_id = departments.department_id
+WHERE first_name = 'Steven' AND last_name = 'King';
+ -------------------------------------------   
+SElECT location_id,
+        street_address, 
+        postal_code, 
+        city, 
+        state_province, 
+        country_id
+FROM locations
+WHERE location_id = (SELECT location_id FROM departments
+                        WHERE department_id = (SELECT department_id FROM employees
+                                                WHERE first_name = 'Steven' AND
+                                                    last_name = 'King'));
+                                                    
 -- 문제 4.
 SELECT employee_id, first_name, salary
 FROM employees
@@ -36,21 +56,84 @@ WHERE salary < ANY (SELECT salary FROM employees WHERE job_id = 'ST_MAN')
 ORDER BY salary DESC;
 
 -- 문제 5.
+-- 조건절 비교
 SELECT emp.employee_id, emp.first_name, emp.salary, emp.department_id
 FROM employees emp
-WHERE emp.salary = (SELECT MAX(salary) FROM employees dept WHERE dept.department_id = emp.department_id)
+WHERE (emp.department_id, emp.salary) IN (SELECT department_id, MAX(salary)
+                                            FROM employees
+                                            GROUP BY department_id)
 ORDER BY salary DESC;
 
---SELECT emp.employee_id, emp.first_name, emp.salary, emp.department_id
---FROM employees emp
---JOIN (SELECT department_id, MAX(salary) FROM employees GROUP BY department_id) sal
---ON emp.department_id = sal.department_id AND emp.salary = sal.
---ORDER BY emp.salary DESC;
+-- 부서별 최고급여 쿼리
+--SELECT department_id, MAX(salary) FROM employees
+--GROUP BY department_id;
+
+-- 테이블 조인
+SELECT emp.employee_id, emp.first_name, emp.salary, emp.department_id
+FROM employees emp
+    JOIN 
+    (SELECT department_id, MAX(salary) salary
+         FROM employees
+         GROUP BY department_id) t
+    ON emp.department_id = t.department_id
+WHERE emp.salary = t.salary 
+ORDER BY emp.salary DESC; 
 
 -- 문제 6.
-SELECT j.job_title, SUM(emp.salary)
+SELECT j.job_title, t.sumsalary , j.job_id, t.job_id
+FROM jobs j
+    JOIN 
+    (SELECT job_id, SUM(salary) sumSalary 
+        FROM employees
+        GROUP BY job_id) t
+    ON j.job_id = t.job_id
+ORDER BY sumSalary DESC;
+
+-- 문제 7.
+SELECT emp. employee_id,
+       emp.first_name,
+       emp.salary
 FROM employees emp
-    JOIN jobs j
-        ON emp.job_id = j.job_id
-GROUP BY j.job_title
-ORDER BY SUM(emp.salary) DESC;
+    JOIN 
+    (SELECT department_id, AVG(salary) salary
+        FROM employees
+        GROUP BY department_id) t
+    ON emp.department_id = t.department_id
+WHERE emp.salary > t.salary;
+
+-- 문제 8.
+SELECT 
+        employee_id, 
+        first_name,
+        salary,
+        hire_date
+FROM
+    (SELECT rownum rn,
+        employee_id, 
+        first_name,
+        salary,
+        hire_date
+    FROM
+        (SELECT employee_id, 
+                first_name,
+                salary,
+                hire_date
+        FROM employees
+        ORDER BY hire_date))
+WHERE rn >= 11 AND
+    rn<= 15;
+
+-- ROW_NUMBER 함수 사용   
+ SELECT rownum, employee_id, first_name, salary, hire_date
+FROM
+    (SELECT employee_id, first_name, salary, hire_date,
+            ROW_NUMBER() OVER (ORDER BY hire_date) AS rnum
+    FROM employees)
+WHERE rnum >= 11 AND rnum <= 15;  
+
+-- RANK 함수 사용
+SELECT employee_id, first_name, salary, hire_date, rank
+FROM (SELECT employee_id, first_name, salary, hire_date,
+        RANK() OVER (ORDER BY hire_date ASC) AS rank
+        FROM employees) 
+WHERE rank BETWEEN 11 AND 15;
